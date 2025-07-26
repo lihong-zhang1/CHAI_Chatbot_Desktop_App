@@ -4,7 +4,9 @@
 ![PyQt5](https://img.shields.io/badge/PyQt5-5.15+-green.svg)
 ![License](https://img.shields.io/badge/License-MIT-yellow.svg)
 
-A desktop chat application for having conversations with CHAI AI Model[https://www.chai-research.com/]. 
+A desktop chat application for having conversations with CHAI AI Model[https://www.chai-research.com/].
+<img width="750" height="112" alt="Screenshot 2025-07-26 at 12 30 29 PM" src="https://github.com/user-attachments/assets/7dd665c8-218c-4da2-9ded-aafb312fa5cd" />
+
 
 ## Getting Started
 
