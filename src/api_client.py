@@ -80,9 +80,9 @@ class APIClient:
         from urllib3.util.retry import Retry
         
         retry_strategy = Retry(
-            total=config.api.MAX_RETRIES,
-            backoff_factor=1,
-            status_forcelist=[429, 500, 502, 503, 504],
+            total=2,  # Reduce retries for faster failure
+            backoff_factor=0.5,
+            status_forcelist=[429, 502, 503, 504],  # Don't retry on 500
             method_whitelist=["POST"]
         )
         

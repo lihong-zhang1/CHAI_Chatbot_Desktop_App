@@ -95,11 +95,24 @@ class ChatWindow(QWidget):
         # Close button
         close_btn = QPushButton("×")
         close_btn.setFixedSize(40, 40)
-        close_btn.setStyleSheet(f"""
-            QPushButton {{
-                {Theme.get_button_style()}
+        close_btn.setStyleSheet("""
+            QPushButton {
+                background: qlineargradient(x1:0, y1:0, x2:1, y2:1,
+                    stop:0 rgba(255, 255, 255, 0.9),
+                    stop:0.3 rgba(200, 150, 255, 0.8),
+                    stop:1.0 rgba(178, 77, 197, 0.9));
+                border: 1px solid rgba(255, 255, 255, 0.2);
+                border-radius: 20px;
+                color: white;
                 font-size: 20px;
-            }}
+                font-weight: bold;
+            }
+            QPushButton:hover {
+                background: qlineargradient(x1:0, y1:0, x2:1, y2:1,
+                    stop:0 rgba(255, 255, 255, 1.0),
+                    stop:0.3 rgba(220, 170, 255, 0.9),
+                    stop:1.0 rgba(198, 97, 217, 1.0));
+            }
         """)
         close_btn.clicked.connect(self.close)
         

@@ -303,17 +303,23 @@ class InputArea(QFrame):
         btn = QPushButton("🎤")
         btn.setFixedSize(40, 40)
         btn.setToolTip("Voice input")
-        btn.setStyleSheet(f"""
-            QPushButton {{
-                background: rgba(233, 30, 133, 0.8);
+        btn.setStyleSheet("""
+            QPushButton {
+                background: qlineargradient(x1:0, y1:0, x2:1, y2:1,
+                    stop:0 rgba(255, 255, 255, 0.9),
+                    stop:0.3 rgba(200, 150, 255, 0.8),
+                    stop:1.0 rgba(178, 77, 197, 0.9));
                 border: none;
                 border-radius: 20px;
                 color: white;
                 font-size: 18px;
-            }}
-            QPushButton:hover {{
-                background: rgba(233, 30, 133, 1.0);
-            }}
+            }
+            QPushButton:hover {
+                background: qlineargradient(x1:0, y1:0, x2:1, y2:1,
+                    stop:0 rgba(255, 255, 255, 1.0),
+                    stop:0.3 rgba(220, 170, 255, 0.9),
+                    stop:1.0 rgba(198, 97, 217, 1.0));
+            }
         """)
         return btn
     
@@ -322,14 +328,34 @@ class InputArea(QFrame):
         btn = QPushButton("→")
         btn.setFixedSize(40, 40)
         btn.setToolTip("Send message")
-        btn.setStyleSheet(f"""
-            QPushButton {{
-                {Theme.get_button_style().replace('border-radius: 20px', 'border-radius: 20px').replace('font-weight: bold;', 'font-weight: bold; font-size: 20px;')}
-            }}
-            QPushButton:disabled {{
+        btn.setStyleSheet("""
+            QPushButton {
+                background: qlineargradient(x1:0, y1:0, x2:1, y2:1,
+                    stop:0 rgba(255, 255, 255, 0.9),
+                    stop:0.3 rgba(200, 150, 255, 0.8),
+                    stop:1.0 rgba(178, 77, 197, 0.9));
+                border: none;
+                border-radius: 20px;
+                color: white;
+                font-size: 20px;
+                font-weight: bold;
+            }
+            QPushButton:hover {
+                background: qlineargradient(x1:0, y1:0, x2:1, y2:1,
+                    stop:0 rgba(255, 255, 255, 1.0),
+                    stop:0.3 rgba(220, 170, 255, 0.9),
+                    stop:1.0 rgba(198, 97, 217, 1.0));
+            }
+            QPushButton:pressed {
+                background: qlineargradient(x1:0, y1:0, x2:1, y2:1,
+                    stop:0 rgba(240, 240, 240, 1.0),
+                    stop:0.3 rgba(180, 130, 235, 1.0),
+                    stop:1.0 rgba(158, 57, 177, 1.0));
+            }
+            QPushButton:disabled {
                 background: rgba(100, 100, 100, 0.5);
                 color: rgba(255, 255, 255, 0.3);
-            }}
+            }
         """)
         return btn
     
