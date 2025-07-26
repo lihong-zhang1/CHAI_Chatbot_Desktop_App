@@ -1,0 +1,17 @@
+# CHAI Friend - AI Chat Companion Requirements
+# Core dependencies for a modern desktop chat application
+
+# GUI Framework
+PyQt5>=5.15.0
+
+# HTTP Client with robust features
+requests>=2.25.0
+urllib3>=1.26.0
+
+# Type hints support
+typing-extensions>=4.0.0
+
+# Development dependencies (optional, uncomment if needed)
+# pytest>=6.0.0  # For testing (though we use unittest for now)
+# black>=22.0.0  # For code formatting
+# mypy>=0.910    # For type checking
