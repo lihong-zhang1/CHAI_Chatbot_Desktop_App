@@ -34,6 +34,18 @@ A desktop chat application for having conversations with CHAI AI Model[https://w
 The app should open up, and you can start chatting right away as below.
 <img width="736" height="786" alt="Screenshot 2025-07-26 at 12 07 08 PM" src="https://github.com/user-attachments/assets/a63153ae-21f1-49f1-979c-be8a5d2c6909" />
 
+## Using it
+
+Just type in the text box at the bottom and hit Enter to send. Shift+Enter if you want to add a new line without sending.
+
+There are some quick-start buttons when you first open the app - just click them to send common greetings.
+
+### Text formatting
+Basic markdown works:
+- `**bold**` makes **bold** text
+- `*italic*` makes *italic* text  
+- Backticks for `code`
+- Some text emojis get converted: `:)` becomes 😊, `<3` becomes ❤️
 
 ## How it's organized
 
@@ -54,13 +66,10 @@ The code is split into logical pieces to keep things manageable:
 
 I tried to keep each file focused on one thing. The main app doesn't need to know about API details, and the UI components don't need to worry about configuration. Makes it easier to change things later.
 
-## Key parts
+## Key parts of Codes
 
 ### Chat Messages
 The `ChatBubble` class handles displaying messages. AI messages show up on the left with a sparkle icon, user messages on the right. It processes basic markdown formatting and converts text emojis to actual emojis.
-
-### Input Area  
-The text input at the bottom auto-resizes as you type. Enter sends the message, Shift+Enter adds a new line. There's also a voice button (not implemented yet) and the send button.
 
 ### API Client
 Handles all the communication with CHAI's servers. Runs in a background thread so the UI doesn't freeze while waiting for responses. Has retry logic in case the network is flaky.
@@ -68,23 +77,7 @@ Handles all the communication with CHAI's servers. Runs in a background thread s
 ## Customizing it
 
 ### Colors and styling
-Want different colors? Check out `styles.py`. The main purple gradient is defined in `PRIMARY_GRADIENT`. You can change the colors there and it'll update throughout the app.
-
-### Settings
-The `config.py` file has the main settings like window size, bot name, and API endpoints. Pretty straightforward to modify if you need to.
-
-## Using it
-
-Just type in the text box at the bottom and hit Enter to send. Shift+Enter if you want to add a new line without sending.
-
-There are some quick-start buttons when you first open the app - just click them to send common greetings.
-
-### Text formatting
-Basic markdown works:
-- `**bold**` makes **bold** text
-- `*italic*` makes *italic* text  
-- Backticks for `code`
-- Some text emojis get converted: `:)` becomes 😊, `<3` becomes ❤️
+Check out `styles.py`. The main purple gradient is defined in `PRIMARY_GRADIENT`. You can change the colors there and it'll update throughout the app.
 
 ## Development stuff
 
