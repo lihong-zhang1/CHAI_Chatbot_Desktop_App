@@ -18,7 +18,7 @@ A desktop chat application for having conversations with CHAI AI Model[https://w
 1. **Get the code**
    ```bash
    git clone https://github.com/lihong-zhang1/CHAI_Chatbot_Desktop_App
-   cd CHAI-Friend
+   cd CHAI_Chatbot_Desktop_App
    ```
 
 2. **Install what it needs**
