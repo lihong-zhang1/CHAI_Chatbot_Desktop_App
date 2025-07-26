@@ -5,7 +5,10 @@ CHAI Friend - AI Chat Desktop App
 A desktop chat application for talking with AI. Built with PyQt5.
 Focuses on clean UI and smooth user experience.
 
-Started as a learning project but turned out pretty nice.
+Lihong's development journey:
+- 40mins in foundational coding
+- 30mins in UI design
+- 20mins in testing
 """
 
 import sys
@@ -333,18 +336,23 @@ class ChatWindow(QWidget):
     
     def _load_history_silently(self):
         """Load chat history for AI context without displaying."""
-        history_file = Path(config.ui.HISTORY_FILE)
+        # For demo purposes, start with fresh conversation each time
+        # Comment out the loading to avoid confusion with old conversations
+        self.chat_history = []
+        logger.info("Starting fresh conversation session")
         
-        try:
-            if history_file.exists():
-                with open(history_file, 'r', encoding='utf-8') as f:
-                    self.chat_history = json.load(f)
-                logger.info(f"Loaded {len(self.chat_history)} messages for AI context")
-            else:
-                self.chat_history = []
-        except Exception as e:
-            logger.error(f"Failed to load history: {e}")
-            self.chat_history = []
+        # Original history loading code (commented out for clean demo):
+        # history_file = Path(config.ui.HISTORY_FILE)
+        # try:
+        #     if history_file.exists():
+        #         with open(history_file, 'r', encoding='utf-8') as f:
+        #             self.chat_history = json.load(f)
+        #         logger.info(f"Loaded {len(self.chat_history)} messages for AI context")
+        #     else:
+        #         self.chat_history = []
+        # except Exception as e:
+        #     logger.error(f"Failed to load history: {e}")
+        #     self.chat_history = []
     
     def _save_history(self):
         """Save chat history to file."""
