@@ -5,7 +5,10 @@ CHAI Friend - AI Chat Desktop App
 A desktop chat application for talking with AI. Built with PyQt5.
 Focuses on clean UI and smooth user experience.
 
-Started as a learning project but turned out pretty nice.
+Lihong's development journey:
+- 40mins in foundational coding
+- 30mins in UI design
+- 20mins in testing
 """
 
 import sys
@@ -33,7 +36,7 @@ logger = logging.getLogger(__name__)
 
 
 class ChatWindow(QWidget):
-    """Main chat window with modern design and smooth interactions."""
+    """Main chat window."""
     
     def __init__(self):
         super().__init__()
@@ -220,7 +223,7 @@ class ChatWindow(QWidget):
         is_ai: bool, 
         timestamp: Optional[datetime] = None
     ) -> QWidget:
-        """Add a message to the chat with proper alignment."""
+        """Add a message to the chat with alignment."""
         bubble = ChatBubble(sender, message, is_ai, timestamp)
         
         # Create container for proper 2:1 alignment
