@@ -4,17 +4,7 @@
 ![PyQt5](https://img.shields.io/badge/PyQt5-5.15+-green.svg)
 ![License](https://img.shields.io/badge/License-MIT-yellow.svg)
 
-A modern desktop chat application for having conversations with AI. Built with PyQt5 and designed with a clean, intuitive interface.
-
-## Features
-
-- **Modern UI**: Clean purple-themed interface with gradient effects
-- **AI Chat**: Powered by CHAI's language model for natural conversations  
-- **Resizable Window**: Drag to resize, works well on different screen sizes
-- **Quick Start**: Pre-made conversation starters to get going quickly
-- **Rich Text**: Basic markdown formatting and emoji support
-- **Chat History**: Remembers previous conversations for context
-- **Smooth Experience**: Non-blocking UI with background API calls
+A desktop chat application for having conversations with CHAI AI Model[https://www.chai-research.com/]. 
 
 ## Getting Started
 
@@ -27,7 +17,7 @@ A modern desktop chat application for having conversations with AI. Built with P
 
 1. **Get the code**
    ```bash
-   git clone <your-repo-url>
+   git clone https://github.com/lihong-zhang1/CHAI_Chatbot_Desktop_App
    cd CHAI-Friend
    ```
 
@@ -41,7 +31,9 @@ A modern desktop chat application for having conversations with AI. Built with P
    python run.py
    ```
 
-The app should open up and you can start chatting right away.
+The app should open up, and you can start chatting right away as below.
+<img width="736" height="786" alt="Screenshot 2025-07-26 at 12 07 08 PM" src="https://github.com/user-attachments/assets/a63153ae-21f1-49f1-979c-be8a5d2c6909" />
+
 
 ## How it's organized
 
@@ -106,15 +98,6 @@ To run the app in development mode, just:
 ```bash
 python run.py
 ```
-
-Check the console output if something goes wrong - there's logging to help debug issues.
-
-### Code style
-I tried to follow standard Python practices. Used type hints where it made sense, kept functions focused, and documented the trickier parts.
-
-## Contributing
-
-Feel free to open issues or submit pull requests if you find bugs or want to add features. The code is organized to make it easy to extend.
 
 ## License
 
