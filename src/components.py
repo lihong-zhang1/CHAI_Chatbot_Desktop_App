@@ -6,13 +6,15 @@ clean architecture and separation of concerns.
 """
 
 import re
+import subprocess
+import platform
 from datetime import datetime
 from typing import Optional, Callable
 from PyQt5.QtWidgets import (
     QFrame, QVBoxLayout, QHBoxLayout, QLabel, QPushButton, 
-    QTextEdit, QWidget
+    QTextEdit, QWidget, QApplication, QMessageBox
 )
-from PyQt5.QtCore import Qt
+from PyQt5.QtCore import Qt, QThread, pyqtSignal, QTimer
 from PyQt5.QtGui import QFont
 
 from config import config
@@ -71,6 +73,43 @@ class MessageProcessor:
         return text
 
 
+class TTSWorker(QThread):
+    """Background thread for text-to-speech functionality."""
+    
+    finished = pyqtSignal()
+    error_occurred = pyqtSignal(str)
+    
+    def __init__(self, text: str):
+        super().__init__()
+        self.text = text
+    
+    def run(self):
+        """Run text-to-speech in background."""
+        try:
+            # Clean text for TTS (remove HTML tags)
+            clean_text = re.sub(r'<[^>]+>', '', self.text)
+            clean_text = clean_text.replace('<br>', ' ')
+            
+            system = platform.system()
+            if system == "Darwin":  # macOS
+                subprocess.run(["say", clean_text], check=True)
+            elif system == "Windows":
+                subprocess.run(["powershell", "-Command", f"Add-Type -AssemblyName System.Speech; (New-Object System.Speech.Synthesis.SpeechSynthesizer).Speak('{clean_text}')"], check=True)
+            elif system == "Linux":
+                subprocess.run(["espeak", clean_text], check=True)
+            else:
+                self.error_occurred.emit("Text-to-speech not supported on this system")
+                return
+                
+            self.finished.emit()
+        except subprocess.CalledProcessError:
+            self.error_occurred.emit("Text-to-speech failed. Please check system settings.")
+        except FileNotFoundError:
+            self.error_occurred.emit("Text-to-speech engine not found on this system.")
+        except Exception as e:
+            self.error_occurred.emit(f"TTS error: {str(e)}")
+
+
 class ChatBubble(QFrame):
     """Elegant chat bubble component with modern styling."""
     
@@ -86,6 +125,8 @@ class ChatBubble(QFrame):
         self.message = message
         self.is_ai = is_ai
         self.timestamp = timestamp or datetime.now()
+        self.is_liked = False
+        self.tts_worker = None
         
         self._setup_styling()
         self._create_layout()
@@ -143,13 +184,13 @@ class ChatBubble(QFrame):
         name_time_layout = QHBoxLayout()
         name_time_layout.setSpacing(8)
         
-        name_label = QLabel(self.sender)
-        name_label.setStyleSheet("color: white; font-size: 16px; font-weight: 600; background: transparent;")
+        self.name_label = QLabel(self.sender)
+        self.name_label.setStyleSheet("color: white; font-size: 16px; font-weight: 600; background: transparent;")
         
         time_label = QLabel(self.timestamp.strftime('%H:%M'))
         time_label.setStyleSheet("color: rgba(255, 255, 255, 0.6); font-size: 11px; background: transparent;")
         
-        name_time_layout.addWidget(name_label)
+        name_time_layout.addWidget(self.name_label)
         name_time_layout.addWidget(time_label)
         name_time_layout.addStretch()
         
@@ -215,18 +256,75 @@ class ChatBubble(QFrame):
         actions_layout.setSpacing(8)
         actions_layout.setContentsMargins(0, 8, 0, 0)
         
-        actions = [
-            ("👍", "Like"),
-            ("📋", "Copy"),
-            ("🔄", "Regenerate"),
-            ("🔊", "Read aloud")
-        ]
+        # Like button
+        self.like_btn = QPushButton("👍")
+        self.like_btn.setToolTip("Like this message")
+        self.like_btn.setFixedSize(32, 32)
+        self.like_btn.clicked.connect(self._toggle_like)
         
-        for icon, tooltip in actions:
-            btn = QPushButton(icon)
-            btn.setToolTip(tooltip)
-            btn.setFixedSize(32, 32)
-            btn.setStyleSheet("""
+        # Copy button
+        copy_btn = QPushButton("📋")
+        copy_btn.setToolTip("Copy message")
+        copy_btn.setFixedSize(32, 32)
+        copy_btn.clicked.connect(self._copy_message)
+        
+        # Regenerate button
+        regenerate_btn = QPushButton("🔄")
+        regenerate_btn.setToolTip("Regenerate response")
+        regenerate_btn.setFixedSize(32, 32)
+        regenerate_btn.clicked.connect(self._regenerate_response)
+        
+        # TTS button
+        self.tts_btn = QPushButton("🔊")
+        self.tts_btn.setToolTip("Read aloud")
+        self.tts_btn.setFixedSize(32, 32)
+        self.tts_btn.clicked.connect(self._toggle_tts)
+        
+        # Apply styling to all buttons
+        button_style = """
+            QPushButton {
+                background: rgba(255, 255, 255, 0.1);
+                border: 1px solid rgba(255, 255, 255, 0.2);
+                border-radius: 16px;
+                font-size: 14px;
+            }
+            QPushButton:hover {
+                background: rgba(255, 255, 255, 0.2);
+            }
+        """
+        
+        for btn in [self.like_btn, copy_btn, regenerate_btn, self.tts_btn]:
+            btn.setStyleSheet(button_style)
+            actions_layout.addWidget(btn)
+        
+        actions_layout.addStretch()
+        return actions_layout
+    
+    def _toggle_like(self):
+        """Toggle like status for this message."""
+        self.is_liked = not self.is_liked
+        if self.is_liked:
+            self.like_btn.setText("👍✨")
+            self.like_btn.setToolTip("Liked! Click to unlike")
+            self.like_btn.setStyleSheet("""
+                QPushButton {
+                    background: qlineargradient(x1:0, y1:0, x2:1, y2:1,
+                        stop:0 rgba(255, 215, 0, 0.3),
+                        stop:1 rgba(255, 165, 0, 0.3));
+                    border: 1px solid rgba(255, 215, 0, 0.5);
+                    border-radius: 16px;
+                    font-size: 14px;
+                }
+                QPushButton:hover {
+                    background: qlineargradient(x1:0, y1:0, x2:1, y2:1,
+                        stop:0 rgba(255, 215, 0, 0.4),
+                        stop:1 rgba(255, 165, 0, 0.4));
+                }
+            """)
+        else:
+            self.like_btn.setText("👍")
+            self.like_btn.setToolTip("Like this message")
+            self.like_btn.setStyleSheet("""
                 QPushButton {
                     background: rgba(255, 255, 255, 0.1);
                     border: 1px solid rgba(255, 255, 255, 0.2);
@@ -237,10 +335,82 @@ class ChatBubble(QFrame):
                     background: rgba(255, 255, 255, 0.2);
                 }
             """)
-            actions_layout.addWidget(btn)
+    
+    def _copy_message(self):
+        """Copy message text to clipboard."""
+        try:
+            # Remove HTML formatting for clean copy
+            clean_text = re.sub(r'<[^>]+>', '', self.message)
+            clean_text = clean_text.replace('<br>', '\n')
+            
+            clipboard = QApplication.clipboard()
+            clipboard.setText(clean_text)
+            
+            # Visual feedback
+            original_text = self.sender
+            if hasattr(self, 'name_label'):
+                self.name_label.setText("Copied!")
+                QTimer.singleShot(1500, lambda: self.name_label.setText(original_text))
+                
+        except Exception as e:
+            print(f"Copy failed: {e}")
+    
+    def _regenerate_response(self):
+        """Request regeneration of this AI response."""
+        try:
+            # Find the parent window and trigger regeneration
+            parent = self.parent()
+            while parent and not hasattr(parent, 'send_message'):
+                parent = parent.parent()
+            
+            if parent and hasattr(parent, '_regenerate_last_response'):
+                parent._regenerate_last_response()
+            else:
+                # Show a message if regeneration isn't available
+                msg = QMessageBox()
+                msg.setWindowTitle("Regenerate")
+                msg.setText("Regeneration feature will be available in the next update!")
+                msg.exec_()
+                
+        except Exception as e:
+            print(f"Regenerate failed: {e}")
+    
+    def _toggle_tts(self):
+        """Toggle text-to-speech for this message."""
+        try:
+            if self.tts_worker and self.tts_worker.isRunning():
+                # Stop current TTS
+                self.tts_worker.terminate()
+                self.tts_worker.wait()
+                self.tts_btn.setText("🔊")
+                self.tts_btn.setToolTip("Read aloud")
+            else:
+                # Start TTS
+                self.tts_btn.setText("⏸️")
+                self.tts_btn.setToolTip("Stop reading")
+                
+                self.tts_worker = TTSWorker(self.message)
+                self.tts_worker.finished.connect(self._on_tts_finished)
+                self.tts_worker.error_occurred.connect(self._on_tts_error)
+                self.tts_worker.start()
+                
+        except Exception as e:
+            print(f"TTS failed: {e}")
+    
+    def _on_tts_finished(self):
+        """Handle TTS completion."""
+        self.tts_btn.setText("🔊")
+        self.tts_btn.setToolTip("Read aloud")
+    
+    def _on_tts_error(self, error: str):
+        """Handle TTS error."""
+        self.tts_btn.setText("🔊")
+        self.tts_btn.setToolTip("Read aloud")
         
-        actions_layout.addStretch()
-        return actions_layout
+        msg = QMessageBox()
+        msg.setWindowTitle("Text-to-Speech Error")
+        msg.setText(error)
+        msg.exec_()
 
 
 class InputArea(QFrame):

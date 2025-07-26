@@ -79,12 +79,22 @@ class APIClient:
         from requests.adapters import HTTPAdapter
         from urllib3.util.retry import Retry
         
-        retry_strategy = Retry(
-            total=2,  # Reduce retries for faster failure
-            backoff_factor=0.5,
-            status_forcelist=[429, 502, 503, 504],  # Don't retry on 500
-            method_whitelist=["POST"]
-        )
+        try:
+            # Try newer urllib3 parameter name first
+            retry_strategy = Retry(
+                total=2,  # Reduce retries for faster failure
+                backoff_factor=0.5,
+                status_forcelist=[429, 502, 503, 504],  # Don't retry on 500
+                allowed_methods=["POST"]
+            )
+        except TypeError:
+            # Fall back to older urllib3 parameter name
+            retry_strategy = Retry(
+                total=2,  # Reduce retries for faster failure
+                backoff_factor=0.5,
+                status_forcelist=[429, 502, 503, 504],  # Don't retry on 500
+                method_whitelist=["POST"]
+            )
         
         adapter = HTTPAdapter(max_retries=retry_strategy)
         session.mount("http://", adapter)
